@@ -1,38 +1,38 @@
 package ch.karthi;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class CME_Example1 {
+public class ConcurrentModificationExceptionInMap {
 
 	public static void main(String[] args) {
 
 		Log<String> log = System.out::println;
 
 		//This will throw ConcurrentModificationException
-		List<String> namesList = new ArrayList<>();
-		//List<String> namesList = new CopyOnWriteArrayList<>(); -> If we use this, the CME will not be thrown. 
-		namesList.add("hari");
-		namesList.add("karthi");
-		namesList.add("ganesh");
+		//Map<String,String> namesList = new HashMap<>();
+		Map<String,String> namesList = new ConcurrentHashMap<>(); //-> If we use this, the CME will not be thrown. 
+		namesList.put("hari", "one");
+		namesList.put("karthi", "two");
+		namesList.put("ganesh", "three");
 
 		//This will throw ConcurrentModificationException
 		new Thread(() -> {
-			namesList.forEach(str -> {
+			namesList.forEach((k,v) -> {
 				sleep(2);
 				log.log("reading...");
-				log.log(str);
+				log.log(v);
 			});
 		}).start();
 
 		new Thread(() -> {
-			namesList.add("surya");
+			namesList.put("surya", "four");
 			log.log("writing going to sleep...");
 			sleep(5);
 			log.log("writing woke up...");
-			namesList.add("harish");
+			namesList.put("harish","five");
 		}).start();
 
 		log.log("main thread completed");
