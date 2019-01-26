@@ -2,6 +2,7 @@ package ch.karthi;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class CME_Example1 {
@@ -10,11 +11,14 @@ public class CME_Example1 {
 
 		Log<String> log = System.out::println;
 
+		//This will throw ConcurrentModificationException
 		List<String> namesList = new ArrayList<>();
+		//List<String> namesList = new CopyOnWriteArrayList<>(); -> If we use this, the CME will not be thrown. 
 		namesList.add("hari");
 		namesList.add("karthi");
 		namesList.add("ganesh");
 
+		//This will throw ConcurrentModificationException
 		new Thread(() -> {
 			namesList.forEach(str -> {
 				sleep(2);
